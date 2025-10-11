@@ -7,6 +7,8 @@ import ProtectedRoute from "./components/utils/ProtectedRoute";
 import { Toaster } from "./components/ui/sonner";
 import Dashboard from "./components/pages/Dashboard";
 import Home from "./components/pages/Home";
+import Login from "./components/pages/Login";
+import Signin from "./components/pages/Signin";
 // import "./App.css";
 
 function App() {
@@ -17,7 +19,8 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route element={<PublicRoute />}>
-              {/* <Route path="/login" element={<Login />} /> */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/signin" element={<Signin />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/home" element={<Home />} />
             </Route>
