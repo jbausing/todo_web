@@ -1,24 +1,18 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./auth/authSlice";
 import { authApi } from "./api/authApi";
-import { contentApi } from "./api/ContentApi";
-import { quizApi } from "./api/QuizApi";
-import { academyApi } from "./api/Academy";
+import { todoApi } from "./api/ToDoApi";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     [authApi.reducerPath]: authApi.reducer,
-    [contentApi.reducerPath]: contentApi.reducer,
-    [quizApi.reducerPath]: quizApi.reducer,
-    [academyApi.reducerPath]: academyApi.reducer,
+    [todoApi.reducerPath]: todoApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
       .concat(authApi.middleware)
-      .concat(contentApi.middleware)
-      .concat(quizApi.middleware)
-      .concat(academyApi.middleware),
+      .concat(todoApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

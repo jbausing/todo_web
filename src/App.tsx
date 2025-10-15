@@ -19,14 +19,12 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route element={<PublicRoute />}>
-              <Route path="/login" element={<Login />} />
-              <Route path="/signin" element={<Signin />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/home" element={<Home />} />
+              <Route path="/" element={<Login />} />
+              <Route path="/create-account" element={<Signin />} />
             </Route>
             <Route element={<ProtectedRoute />}>
-              {/* <Route index element={<Dashboard />} />
-              <Route path="/dashboard" element={<Dashboard />} /> */}
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/home" element={<Home />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/" replace />} />

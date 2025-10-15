@@ -9,7 +9,7 @@ export const authApi = createApi({
   baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
     login: builder.mutation<
-      { role: string },
+      { token: string },
       { email: string; password: string }
     >({
       query: ({ email, password }) => ({
@@ -19,10 +19,11 @@ export const authApi = createApi({
       }),
     }),
 
-    getUser: builder.query<{ id: number }, void>({
-      query: () => "/user/me",
-      transformResponse: (response: { success: boolean; data: number }) => ({
-        id: response.data,
+    getUser: builder.query({
+      query: () => "/user/me/",
+      transformResponse: (response: { success: boolean; id: number }) => ({
+        success: response.success,
+        id: response.id,
       }),
     }),
 

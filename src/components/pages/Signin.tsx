@@ -2,113 +2,15 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "../ui/sheet";
-import { Check, X } from "lucide-react";
 
-type Todo = {
-  id: number;
-  desc: string;
-  date: string;
-  status: number;
-};
-
-function Home() {
-  const [todo, setTodo] = useState<Todo[]>([
-    // {
-    //   id: 1,
-    //   desc: "sample task",
-    //   date: "2025-09-25",
-    //   status: 1,
-    // },
-  ]);
-
+function SignUp() {
   const [input, setInput] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
-  const addTask = () => {
-    if (input !== "") {
-      const addTodo: Todo = {
-        id: todo.length + 1,
-        desc: input,
-        date: new Date().toISOString().split("T")[0],
-        status: 1,
-      };
-      setTodo([...todo, addTodo]);
-      setInput("");
-    } else {
-      alert("Please enter some task");
-    }
-  };
 
   /* ...imports and state unchanged... */
 
   return (
     <div className="flex flex-col items-center p-20 relative">
-      {/* NAV: absolute like your original, but stretches from left to right and uses justify-between */}
-      <nav className="absolute top-6 left-8 right-8 flex items-center justify-between text-sm">
-        {/* left group (History, Dark mode, To Do List) */}
-        <div className="flex items-center gap-8 font-[Poppins]">
-          <Sheet>
-            <SheetTrigger className="cursor-pointer font-bold">
-              History
-            </SheetTrigger>
-            <SheetContent side="left">
-              <SheetHeader>
-                <SheetTitle>Edit profile</SheetTitle>
-                <SheetDescription>
-                  Make changes to your profile here. Click save when you&apos;re
-                  done.
-                </SheetDescription>
-              </SheetHeader>
-              <div className="grid flex-1 auto-rows-min gap-6 px-4">
-                <div className="grid gap-3">
-                  <label htmlFor="sheet-demo-name">Name</label>
-                  <Input id="sheet-demo-name" defaultValue="Pedro Duarte" />
-                </div>
-                <div className="grid gap-3">
-                  <label htmlFor="sheet-demo-username">Username</label>
-                  <Input id="sheet-demo-username" defaultValue="@peduarte" />
-                </div>
-              </div>
-              <SheetFooter>
-                <Button type="submit">Save changes</Button>
-                <SheetClose asChild>
-                  <Button variant="outline">Close</Button>
-                </SheetClose>
-              </SheetFooter>
-            </SheetContent>
-          </Sheet>
-
-          <span className="font-bold">Dark mode</span>
-          <span>
-            {" "}
-            <Link to="/home" className="font-bold">
-              To Do List
-            </Link>{" "}
-          </span>
-        </div>
-
-        {/* right group (Log in, Sign in) */}
-        <div className="flex items-center gap-6 font-[Poppins] font-bold">
-          <Link
-            to="/login"
-            className="cursor-pointer text-primary underline-offset-4 hover:underline"
-          >
-            Log in
-          </Link>
-          <span className="cursor-pointer">Sign in</span>
-        </div>
-      </nav>
-
       {/* Outer: centers page and restricts width */}
       <div className="w-full max-w-6xl mx-auto py-20 px-6">
         {/* Parent: stacked on small, side-by-side on md+ */}
@@ -167,7 +69,7 @@ function Home() {
 
             <div>
               <Button className="font-[Poppins] text-base uppercase font-bold bg-[#EFEFEF] h-10 w-full px-4 text-black hover:!bg-[#EFEFEF] hover:!text-black !rounded-none cursor-pointer">
-                Sign in
+                Sign Up
               </Button>
             </div>
           </div>
@@ -177,7 +79,7 @@ function Home() {
             <h2 className="font-[Poppins] text-lg font-semibold text-center max-w-md">
               Already have an account? Click{" "}
               <Link
-                to="/login"
+                to="/"
                 className="uppercase font-bold underline underline-offset-2"
               >
                 LOG IN
@@ -209,4 +111,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default SignUp;
