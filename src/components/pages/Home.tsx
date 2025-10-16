@@ -29,14 +29,7 @@ type Todo = {
 };
 
 function Home() {
-  const [todo, setTodo] = useState<Todo[]>([
-    // {
-    //   id: 1,
-    //   desc: "sample task",
-    //   date: "2025-09-25",
-    //   status: 1,
-    // },
-  ]);
+  const [todo, setTodo] = useState<Todo[]>([]);
 
   const [input, setInput] = useState("");
 
@@ -113,24 +106,46 @@ function Home() {
             </SheetTrigger>
             <SheetContent side="left">
               <SheetHeader>
-                <SheetTitle>Edit profile</SheetTitle>
+                <SheetTitle>History</SheetTitle>
                 <SheetDescription>
-                  Make changes to your profile here. Click save when you&apos;re
-                  done.
+                  View your past tasks and their statuses here.
                 </SheetDescription>
               </SheetHeader>
-              <div className="grid flex-1 auto-rows-min gap-6 px-4">
-                <div className="grid gap-3">
-                  <label htmlFor="sheet-demo-name">Name</label>
-                  <Input id="sheet-demo-name" defaultValue="Pedro Duarte" />
-                </div>
-                <div className="grid gap-3">
-                  <label htmlFor="sheet-demo-username">Username</label>
-                  <Input id="sheet-demo-username" defaultValue="@peduarte" />
-                </div>
+              <div className="grid flex-1 auto-rows-min gap-2 px-4">
+                {getTodo?.data?.data
+                  ?.filter(
+                    (item: Todo) =>
+                      item.date_finished !== null || item.date_deleted !== null
+                  )
+                  .map((item: Todo) => (
+                    <div
+                      key={item.id}
+                      className={`p-4 ${
+                        item.date_finished
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                      }`}
+                    >
+                      <p key={item.id} className="font-medium">
+                        {item.description}
+                      </p>
+                      <span className="text-xs text-gray-500">
+                        {item.date_finished
+                          ? `Finished on: ${
+                              new Date(item.date_finished)
+                                .toISOString()
+                                .split("T")[0]
+                            }`
+                          : `Deleted on: ${
+                              new Date(item.date_deleted!)
+                                .toISOString()
+                                .split("T")[0]
+                            }`}
+                      </span>
+                    </div>
+                  ))}
               </div>
               <SheetFooter>
-                <Button type="submit">Save changes</Button>
                 <SheetClose asChild>
                   <Button variant="outline">Close</Button>
                 </SheetClose>
