@@ -38,9 +38,6 @@ function Login() {
         const userId = userResponse?.id;
         if (!userId) throw new Error("No user ID found.");
         console.log("userResponse", userResponse);
-
-        alert("Ufiksajf");
-
         navigate("/home");
 
         dispatch(
