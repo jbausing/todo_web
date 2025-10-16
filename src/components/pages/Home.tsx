@@ -13,12 +13,19 @@ import {
   SheetTrigger,
 } from "../ui/sheet";
 import { Check, X } from "lucide-react";
+import {
+  useAddToDOMutation,
+  useGetToDoQuery,
+  useUpToDOMutation,
+} from "@/store/api/ToDoApi";
 
 type Todo = {
   id: number;
-  desc: string;
-  date: string;
-  status: number;
+  description: string;
+  date_added: string;
+  status?: number;
+  date_finished?: string;
+  date_deleted?: string;
 };
 
 function Home() {
@@ -33,20 +40,64 @@ function Home() {
 
   const [input, setInput] = useState("");
 
-  const addTask = () => {
-    if (input !== "") {
+  // const addTask = () => {
+  //   if (input !== "") {
+  //     const addTodo: Todo = {
+  //       id: todo.length + 1,
+  //       desc: input,
+  //       date: new Date().toISOString().split("T")[0],
+  //       status: 1,
+  //     };
+  //     setTodo([...todo, addTodo]);
+  //     setInput("");
+  //   } else {
+  //     alert("Please enter some task");
+  //   }
+  // };
+
+  const [addToDo] = useAddToDOMutation();
+
+  const add = async () => {
+    try {
       const addTodo: Todo = {
         id: todo.length + 1,
-        desc: input,
-        date: new Date().toISOString().split("T")[0],
+        description: input,
+        date_added: new Date().toISOString().split("T")[0],
         status: 1,
       };
-      setTodo([...todo, addTodo]);
-      setInput("");
-    } else {
-      alert("Please enter some task");
-    }
+
+      const checkstat = await addToDo(addTodo).unwrap();
+
+      if (checkstat.success) {
+        setInput("");
+      }
+
+      console.log(checkstat);
+    } catch (error) {}
   };
+
+  const [upToDo] = useUpToDOMutation();
+
+  const update = async (id: number, status: number) => {
+    try {
+      const datas = {
+        id: id,
+        status: status,
+      };
+
+      const checkstat = await upToDo(datas).unwrap();
+
+      if (checkstat.success) {
+        setInput("");
+      }
+
+      console.log(checkstat);
+    } catch (error) {}
+  };
+
+  const getTodo = useGetToDoQuery({});
+
+  console.log(getTodo?.data?.data);
 
   /* ...imports and state unchanged... */
 
@@ -89,22 +140,6 @@ function Home() {
 
           <span className="cursor-pointer font-bold">Dark mode</span>
         </div>
-
-        {/* right group (Log in, Sign in) */}
-        <div className="flex items-center gap-6 font-[Poppins] font-bold">
-          <Link
-            to="/login"
-            className="cursor-pointer text-primary underline-offset-4"
-          >
-            Log in
-          </Link>
-          <Link
-            to="/signin"
-            className="cursor-pointer text-primary underline-offset-4"
-          >
-            Sign in
-          </Link>
-        </div>
       </nav>
 
       {/* rest of your layout unchanged */}
@@ -120,14 +155,14 @@ function Home() {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              addTask();
+              add();
             }
           }}
           placeholder="Add a task"
           className="bg-black text-white h-10 px-4 outline-none focus-visible:ring-0 focus:ring-0 ring-0 shadow-none !rounded-none"
         />
         <Button
-          onClick={addTask}
+          onClick={add}
           className="font-[Poppins] text-xs font-semibold bg-[#EFEFEF] h-10 px-4 text-black hover:!bg-[#EFEFEF] hover:!text-black !rounded-none cursor-pointer"
         >
           I'm on it
@@ -135,25 +170,42 @@ function Home() {
       </div>
 
       <div className="flex flex-col w-3/5 pt-4 space-y-2">
-        {todo.length > 0 && (
+        {getTodo?.data?.data?.filter(
+          (item: Todo) =>
+            item.date_finished === null && item.date_deleted === null
+        ).length > 0 && (
           <div className="font-[Poppins] text-center">Your Task: </div>
         )}
-        {todo.map((item) => (
-          <div
-            key={item.id}
-            className="mx-auto flex items-center justify-between border border-black w-[468px] h-10 px-3"
-          >
-            <p>{item.desc}</p> <p>{item.date}</p>
-            <div className="flex items-center space-x-2">
-              <button aria-label="delete" className="p-1 cursor-pointer">
-                <X className="h-4 w-4" />
-              </button>
-              <button aria-label="done" className="p-1 cursor-pointer">
-                <Check className="h-4 w-4" />
-              </button>
+        {getTodo?.data?.data
+          ?.filter(
+            (item: Todo) =>
+              item.date_finished === null && item.date_deleted === null
+          )
+          .map((item: Todo) => (
+            <div
+              key={item.id}
+              className="mx-auto flex items-center justify-between border border-black w-[468px] h-10 px-3"
+            >
+              <p>{item.description}</p>{" "}
+              <p>{new Date(item.date_added).toISOString().split("T")[0]}</p>
+              <div className="flex items-center space-x-2">
+                <button
+                  aria-label="delete"
+                  className="p-1 cursor-pointer"
+                  onClick={() => update(item.id, 2)}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+                <button
+                  aria-label="done"
+                  className="p-1 cursor-pointer"
+                  onClick={() => update(item.id, 1)}
+                >
+                  <Check className="h-4 w-4" />
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   );
