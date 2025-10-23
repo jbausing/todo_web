@@ -9,6 +9,7 @@ import Dashboard from "./components/pages/Dashboard";
 import Home from "./components/pages/Home";
 import Login from "./components/pages/Login";
 import Signin from "./components/pages/Signin";
+import Chats from "./components/pages/Chats";
 // import "./App.css";
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/home" element={<Home />} />
+              <Route path="/chats" element={<Chats />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/" replace />} />
