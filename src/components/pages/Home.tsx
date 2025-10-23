@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import {
@@ -18,8 +18,9 @@ import {
   useGetToDoQuery,
   useUpToDOMutation,
 } from "@/store/api/ToDoApi";
+import { toast } from "sonner";
 
-type Todo = {
+export type Todo = {
   id: number;
   description: string;
   date_added: string;
@@ -29,6 +30,7 @@ type Todo = {
 };
 
 function Home() {
+  const navigate = useNavigate();
   const [todo, setTodo] = useState<Todo[]>([]);
 
   const [input, setInput] = useState("");
@@ -51,22 +53,26 @@ function Home() {
   const [addToDo] = useAddToDOMutation();
 
   const add = async () => {
-    try {
-      const addTodo: Todo = {
-        id: todo.length + 1,
-        description: input,
-        date_added: new Date().toISOString().split("T")[0],
-        status: 1,
-      };
+    if (input !== "") {
+      try {
+        const addTodo: Todo = {
+          id: todo.length + 1,
+          description: input,
+          date_added: new Date().toISOString().split("T")[0],
+          status: 1,
+        };
 
-      const checkstat = await addToDo(addTodo).unwrap();
+        const checkstat = await addToDo(addTodo).unwrap();
 
-      if (checkstat.success) {
-        setInput("");
-      }
+        if (checkstat.success) {
+          setInput("");
+        }
 
-      console.log(checkstat);
-    } catch (error) {}
+        console.log(checkstat);
+      } catch (error) {}
+    } else {
+      toast.error("Please input task!");
+    }
   };
 
   const [upToDo] = useUpToDOMutation();
@@ -153,7 +159,13 @@ function Home() {
             </SheetContent>
           </Sheet>
 
-          <span className="cursor-pointer font-bold">Dark mode</span>
+          <span className="cursor-pointer font-bold">Home</span>
+          <span
+            className="cursor-pointer font-bold"
+            onClick={() => navigate("/chats")}
+          >
+            Chats
+          </span>
         </div>
       </nav>
 
