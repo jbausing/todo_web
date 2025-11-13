@@ -39,8 +39,33 @@ export const todoApi = createApi({
       },
       invalidatesTags: ["todo"],
     }),
+    //get_users
+    getUsers: builder.query({
+      query: () => {
+        return {
+          url: `/todo/get_users`,
+          method: "GET",
+        };
+      },
+    }),
+    // add_message
+    sendMessage: builder.mutation({
+      query: (body) => {
+        return {
+          url: `/todo/add_message/`,
+          method: "POST",
+          body: body,
+        };
+      },
+      invalidatesTags: ["todo"],
+    }),
   }),
 });
 
-export const { useGetToDoQuery, useAddToDOMutation, useUpToDOMutation } =
-  todoApi;
+export const {
+  useGetToDoQuery,
+  useAddToDOMutation,
+  useUpToDOMutation,
+  useGetUsersQuery,
+  useSendMessageMutation,
+} = todoApi;

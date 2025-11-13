@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Sheet,
   SheetClose,
@@ -11,13 +11,90 @@ import {
 } from "../ui/sheet";
 import type { Todo } from "./Home";
 import { Button } from "../ui/button";
-import { useGetToDoQuery } from "@/store/api/ToDoApi";
+import {
+  useGetToDoQuery,
+  useGetUsersQuery,
+  useSendMessageMutation,
+} from "@/store/api/ToDoApi";
 import { useNavigate } from "react-router-dom";
 import { Input } from "../ui/input";
+import { toast } from "sonner";
+
+type Users = {
+  id: number;
+  name: string;
+};
+
+type Message = {
+  receiver: number;
+  message: string;
+};
+
+type AllMessage = {
+  id: number;
+  message: string;
+};
 
 function Chats() {
   const getTodo = useGetToDoQuery({});
   const navigate = useNavigate();
+
+  const uid = localStorage.getItem("uid");
+  const [activeId, setActiveId] = useState(0);
+  const [message, setMessage] = useState("");
+
+  const [messages, setMessages] = useState<AllMessage[]>([]);
+
+  const getUsers = useGetUsersQuery({});
+  console.log(getUsers?.data?.data);
+
+  const [sendMessage] = useSendMessageMutation();
+
+  const submit = async () => {
+    if (message !== "") {
+      try {
+        const addMessage: Message = {
+          receiver: activeId,
+          message: message,
+        };
+
+        const checkstat = await sendMessage(addMessage).unwrap();
+
+        if (checkstat.success) {
+          setMessage("");
+        }
+
+        console.log(checkstat);
+      } catch (error) {}
+    } else {
+      toast.error("Please input some message!");
+    }
+  };
+
+  useEffect(() => {
+    const ws = new WebSocket(
+      // `${import.meta.env.VITE_WS_URL}/message/${uid}_${activeId}`
+      `${import.meta.env.VITE_WS_URL}/message/${uid}_${activeId}`
+    );
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log("Data here: ", data);
+
+      setMessages((prev) => [...prev, data]);
+
+      // if (data.event === "login" && currentId === parseInt(data.id)) {
+      //   // console.log("Ako yun!");
+      //   setDupUser(true);
+      //   localStorage.setItem("cdup", "true");
+      // }
+    };
+
+    return () => {
+      ws.close();
+    };
+  }, [activeId]);
+
   return (
     <>
       <div className="flex flex-col items-center p-20 relative gap-8">
@@ -87,14 +164,61 @@ function Chats() {
           </div>
         </nav>
 
-        <div className="bg-red-100 w-3/4 h-[600px] p-1 flex">
-          <div className="bg-orange-50 w-1/4 p-1">
-            <div className="bg-green-100 p-2">name here</div>
+        <div className=" w-3/4 h-[600px] p-1 flex border">
+          <div className=" w-1/4 p-1 border flex flex-col gap-1">
+            {getUsers?.data?.data.map((item: Users) => (
+              <div
+                className={`p-2 cursor-pointer ${
+                  activeId === item.id ? `bg-blue-500` : `bg-gray-200`
+                } `}
+                key={item.id}
+                onClick={() => setActiveId(item.id)}
+              >
+                {item.name}
+              </div>
+            ))}
           </div>
           <div className="bg-purple-100 w-3/4 p-1 relative">
+            <div className="h-[calc(100%-50px)] bg-blue-100 p-1 flex flex-col gap-2 overflow-auto">
+              {messages.map((item) => (
+                <div className="p-2 bg-red-100 rounded-lg" key={item.id}>
+                  {item.message}
+                </div>
+              ))}
+              {/* <div className="p-2 bg-red-100 rounded-lg">Message 1</div>
+              <div className="p-2 bg-red-100 rounded-lg">Message 2</div>
+              <div className="p-2 bg-red-100 rounded-lg">Message 1</div>
+              <div className="p-2 bg-red-100 rounded-lg">Message 2</div>
+              <div className="p-2 bg-red-100 rounded-lg">Message 1</div>
+              <div className="p-2 bg-red-100 rounded-lg">Message 2</div>
+              <div className="p-2 bg-red-100 rounded-lg">Message 1</div>
+              <div className="p-2 bg-red-100 rounded-lg">Message 2</div>
+              <div className="p-2 bg-red-100 rounded-lg">Message 1</div>
+              <div className="p-2 bg-red-100 rounded-lg">Message 2</div>
+              <div className="p-2 bg-red-100 rounded-lg">Message 1</div>
+              <div className="p-2 bg-red-100 rounded-lg">Message 2</div>
+              <div className="p-2 bg-red-100 rounded-lg">Message 1</div>
+              <div className="p-2 bg-red-100 rounded-lg">Message 2</div>
+              <div className="p-2 bg-red-100 rounded-lg">Message 1</div>
+              <div className="p-2 bg-red-100 rounded-lg">Message 2</div>
+              <div className="p-2 bg-red-100 rounded-lg">Message 1</div>
+              <div className="p-2 bg-red-100 rounded-lg">Message 2</div> */}
+            </div>
             <div className="flex w-full items-center gap-2 absolute bottom-0 p-2">
-              <Input type="text" placeholder="message" className="w-full" />
-              <Button type="submit" variant="outline">
+              <Input
+                type="text"
+                placeholder="message"
+                className="w-full"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                disabled={activeId === 0}
+              />
+              <Button
+                type="submit"
+                variant="outline"
+                onClick={submit}
+                disabled={activeId === 0}
+              >
                 Send
               </Button>
             </div>

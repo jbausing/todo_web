@@ -38,6 +38,7 @@ function Login() {
         const userId = userResponse?.id;
         if (!userId) throw new Error("No user ID found.");
         console.log("userResponse", userResponse);
+        localStorage.setItem("uid", String(userId));
         navigate("/home");
 
         dispatch(
